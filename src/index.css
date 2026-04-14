@@ -1,0 +1,264 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Sacred Playful Color Palette */
+  --color-surface: #e4ffce;
+  --color-surface-container-low: #ceffad;
+  --color-surface-container: #a5ff72;
+  --color-surface-container-high: #8cee4a;
+  --color-surface-container-highest: #6dfb00;
+  --color-surface-container-lowest: #ffffff;
+  
+  --color-primary: #006093;
+  --color-primary-container: #32abfa;
+  --color-primary-dim: #00497d;
+  
+  --color-secondary: #556300;
+  --color-secondary-container: #ffd709;
+  
+  --color-tertiary: #6bfe9c;
+  --color-tertiary-container: #6bfe9c;
+  
+  --color-on-surface: #123600;
+  --color-on-primary: #ebf3ff;
+  --color-on-secondary-container: #5b4b00;
+  --color-outline-variant: #54c500;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6,
+.display, .headline {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+}
+
+.display {
+  font-size: 2.25rem;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.headline {
+  font-size: 1.5rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.title-lg {
+  font-size: 1.25rem;
+  line-height: 1.4;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.title-md {
+  font-size: 1rem;
+  line-height: 1.4;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.body-lg {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.body-md {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Component Styles */
+.btn-primary {
+  @apply px-6 py-4 rounded-xl bg-primary text-on-primary font-semibold cursor-pointer transition-all;
+  box-shadow: var(--button-shadow, 0 4px 0 rgba(0, 73, 125, 0.4));
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0, 73, 125, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 73, 125, 0.4);
+}
+
+/* Card Styles - No borders, soft elevation */
+.card {
+  @apply bg-surface-container-lowest rounded-md p-4;
+  box-shadow: var(--ambient-shadow, 0 30px 30px rgba(18, 54, 0, 0.06));
+}
+
+.card-elevated {
+  @apply bg-surface-container-lowest rounded-md p-6;
+  box-shadow: var(--ambient-shadow, 0 30px 30px rgba(18, 54, 0, 0.06));
+}
+
+/* Chip Styles */
+.chip {
+  @apply inline-flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer;
+  background-color: var(--color-tertiary-container);
+  color: var(--color-on-surface);
+}
+
+.chip.selected {
+  @apply bg-primary text-on-primary;
+}
+
+/* Input Styles */
+.input-field {
+  @apply w-full px-4 py-3 rounded-md bg-surface-container-low text-on-surface placeholder-on-surface/50 transition-colors;
+  border: none;
+  outline: none;
+}
+
+.input-field:focus {
+  @apply bg-surface-container-high;
+}
+
+/* Experience Bar - Gamified */
+.experience-bar {
+  @apply h-12 rounded-full bg-surface-container-high overflow-hidden relative;
+}
+
+.experience-bar-fill {
+  @apply h-full rounded-full transition-all;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%);
+  position: relative;
+}
+
+.experience-bar-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  filter: blur(1px);
+}
+
+/* Streak Badge - Bounce animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.streak-badge {
+  @apply inline-flex items-center justify-center w-12 h-12 rounded-full;
+  background-color: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  font-weight: 700;
+  animation: bounce 0.6s ease-in-out;
+}
+
+/* Verse Card */
+.verse-card {
+  @apply bg-surface-container-lowest rounded-md p-6;
+  border-radius: 1.5rem;
+}
+
+.verse-text {
+  @apply text-title-lg leading-relaxed;
+  color: var(--color-on-surface);
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.verse-reference {
+  @apply text-body-md font-semibold mt-4;
+  color: var(--color-primary);
+}
+
+/* List Styles - No dividers */
+.custom-list {
+  @apply space-y-4;
+}
+
+.custom-list-item {
+  @apply px-4 py-2 rounded-md transition-colors;
+}
+
+.custom-list-item:nth-child(odd) {
+  @apply bg-surface;
+}
+
+.custom-list-item:nth-child(even) {
+  @apply bg-surface-container-low;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-container);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-surface-container-high);
+}
+
+/* Utilities */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
