@@ -10,7 +10,7 @@ interface AppState {
 
   // User state
   user: UserProfile | null
-  setUser: (user: UserProfile) => void
+  setUser: (user: UserProfile | null) => void
   updateUserXP: (xp: number) => void
   updateUserStreak: (streak: number) => void
 

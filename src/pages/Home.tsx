@@ -21,22 +21,9 @@ function formatLanguageLabel(language: unknown): string {
 }
 
 function Home() {
-  const { bibleVersions, setBibleVersions, user, setUser } = useAppStore()
+  const { bibleVersions, setBibleVersions, user } = useAppStore()
 
   useEffect(() => {
-    // Initialize user if not exists
-    if (!user) {
-      setUser({
-        id: '1',
-        name: 'Student',
-        email: 'student@allosparakletos.com',
-        streak: 7,
-        totalXP: 1250,
-        level: 3,
-        joinedDate: new Date('2024-01-15'),
-      })
-    }
-
     // Load Bible versions
     if (bibleVersions.length === 0) {
       bibleService
@@ -46,7 +33,7 @@ function Home() {
         })
         .catch((error) => console.error('Failed to load Bible versions:', error))
     }
-  }, [])
+  }, [bibleVersions.length, setBibleVersions])
 
   const features = [
     {

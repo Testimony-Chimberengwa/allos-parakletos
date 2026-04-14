@@ -1,6 +1,7 @@
 import { Card, Button, ExperienceBar } from '../components'
 import { useAppStore } from '../store'
 import { User, Mail, Award, Zap, Calendar } from 'lucide-react'
+import { signOutUser } from '../services/authService'
 
 function Profile() {
   const user = useAppStore((state) => state.user)
@@ -112,7 +113,7 @@ function Profile() {
           {/* Danger Zone */}
           <div className="space-y-4">
             <h3 className="title-lg font-display">Account Management</h3>
-            <Button variant="secondary" size="lg" className="w-full">
+            <Button variant="secondary" size="lg" className="w-full" onClick={() => void signOutUser()}>
               Logout
             </Button>
             <Button variant="secondary" size="lg" className="w-full opacity-50">

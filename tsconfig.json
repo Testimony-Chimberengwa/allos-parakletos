@@ -9,6 +9,7 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react-jsx",
     "moduleResolution": "bundler",
+    "noEmit": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

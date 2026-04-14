@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { BookOpen } from 'lucide-react'
 import { useAppStore } from '../store'
+import { signOutUser } from '../services/authService'
+import Button from './Button'
 
 function Header() {
   const user = useAppStore((state) => state.user)
@@ -32,6 +34,9 @@ function Header() {
                   <span className="text-on-primary font-bold">{user.name[0]}</span>
                 )}
               </div>
+              <Button variant="tertiary" size="sm" onClick={() => void signOutUser()}>
+                Logout
+              </Button>
             </div>
           )}
         </div>
