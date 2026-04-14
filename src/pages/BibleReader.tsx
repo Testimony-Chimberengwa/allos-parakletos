@@ -24,6 +24,7 @@ function BibleReader() {
   const [loadingChapter, setLoadingChapter] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [readerError, setReaderError] = useState<string | null>(null)
+  const [chapterSource, setChapterSource] = useState<'primary' | 'fallback' | null>(null)
 
   useEffect(() => {
     if (bibleVersions.length === 0) {
@@ -120,13 +121,25 @@ function BibleReader() {
     setSelectedChapterId(chapterId)
     setLoadingChapter(true)
     setReaderError(null)
+    setChapterSource(null)
 
     try {
-      const chapter = await bibleService.getChapterContent(selectedBibleVersion.id, chapterId, {
-        includeVerseNumbers: true,
-        includeVerseSpans: true,
+      if (!selectedBook) {
+        throw new Error('No selected book available for chapter loading.')
+      }
+
+      const result = await bibleService.getChapterContentWithFallback({
+        bibleId: selectedBibleVersion.id,
+        chapterId,
+        versionAbbreviation: selectedBibleVersion.abbreviation,
+        bookName: selectedBook.name,
+        options: {
+          includeVerseNumbers: true,
+          includeVerseSpans: true,
+        },
       })
-      setChapterContent(chapter.content || 'No text available for this chapter.')
+      setChapterContent(result.chapter.content || 'No text available for this chapter.')
+      setChapterSource(result.source)
     } catch (error) {
       console.error('Error loading chapter content:', error)
       setReaderError('Unable to load chapter content. Try another chapter or version.')
@@ -314,6 +327,11 @@ function BibleReader() {
                     ? 'Choose a chapter below. The currently selected book stays open while the others remain collapsed.'
                     : 'Use the book rail on the left to open a book.'}
                 </p>
+                {chapterSource === 'fallback' && (
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-secondary mt-2">
+                    Backup source active: wldeh/bible-api (free)
+                  </p>
+                )}
               </div>
 
               {selectedChapter && (

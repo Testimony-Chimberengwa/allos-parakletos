@@ -58,6 +58,32 @@ npm run dev
 
 The app will open at `http://localhost:5173`
 
+### Bible Assistant Backend (Express + Embeddings)
+
+The Bible Assistant now has a real backend service using:
+- Express (Node)
+- Local embeddings model: `all-MiniLM-L6-v2` via `@xenova/transformers`
+- Primary source: `api.bible`
+- Automatic backup source: `wldeh/bible-api` (free)
+
+Run the backend in a second terminal:
+```bash
+npm run dev:assistant
+```
+
+Backend health check:
+```bash
+http://localhost:8787/health
+```
+
+Required env values:
+```env
+VITE_BIBLE_API_KEY=...
+VITE_BIBLE_API_BASE_URL=https://rest.api.bible
+VITE_ASSISTANT_API_URL=http://localhost:8787
+ASSISTANT_PORT=8787
+```
+
 ### Build
 
 Build for production:

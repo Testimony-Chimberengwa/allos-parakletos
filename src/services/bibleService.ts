@@ -3,6 +3,7 @@ import type { BibleVersion, Book, Chapter, Verse } from '../types'
 
 const API_BASE_URL = import.meta.env.VITE_BIBLE_API_BASE_URL
 const API_KEY = import.meta.env.VITE_BIBLE_API_KEY
+const FREE_BIBLE_API_BASE_URL = 'https://cdn.jsdelivr.net/gh/wldeh/bible-api/bibles'
 
 // Known IDs confirmed for this API key: AMP, KJV, NLT
 const PREFERRED_VERSION_IDS = [
@@ -51,6 +52,34 @@ function sortVersionsForReading(versions: BibleVersion[]): BibleVersion[] {
 
     return a.name.localeCompare(b.name)
   })
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function getFreeFallbackVersion(versionAbbreviation: string): string {
+  const normalized = normalizeAbbreviation(versionAbbreviation)
+
+  if (normalized.includes('KJV')) return 'en-kjv'
+  if (normalized.includes('ASV')) return 'en-asv'
+
+  // Fallback for NLT/AMP and other unavailable copyrighted versions.
+  return 'en-web'
+}
+
+function toFreeBookSlug(bookName: string): string {
+  return bookName.toLowerCase().replace(/[^a-z0-9]/g, '')
+}
+
+function toChapterNumber(chapterId: string): string | null {
+  const candidate = chapterId.split('.').pop() || ''
+  return /^\d+$/.test(candidate) ? candidate : null
 }
 
 const apiClient = axios.create({
@@ -141,6 +170,62 @@ export const bibleService = {
     } catch (error) {
       console.error('Error fetching chapter content:', error)
       throw error
+    }
+  },
+
+  async getChapterContentWithFallback(input: {
+    bibleId: string
+    chapterId: string
+    versionAbbreviation: string
+    bookName: string
+    options?: { includeVerseNumbers?: boolean; includeVerseSpans?: boolean }
+  }): Promise<{ chapter: Chapter; source: 'primary' | 'fallback' }> {
+    try {
+      const chapter = await this.getChapterContent(input.bibleId, input.chapterId, input.options)
+      return { chapter, source: 'primary' }
+    } catch (primaryError) {
+      const chapterNumber = toChapterNumber(input.chapterId)
+      if (!chapterNumber) {
+        throw primaryError
+      }
+
+      const fallbackVersion = getFreeFallbackVersion(input.versionAbbreviation)
+      const bookSlug = toFreeBookSlug(input.bookName)
+      const fallbackUrl = `${FREE_BIBLE_API_BASE_URL}/${fallbackVersion}/books/${bookSlug}/chapters/${chapterNumber}.json`
+
+      try {
+        const fallbackResponse = await axios.get(fallbackUrl)
+        const fallbackVerses = fallbackResponse.data?.data as Array<{
+          verse: string
+          text: string
+        }>
+
+        if (!Array.isArray(fallbackVerses) || fallbackVerses.length === 0) {
+          throw new Error('Fallback chapter response did not contain verses.')
+        }
+
+        const fallbackHtml = fallbackVerses
+          .map((verse) => {
+            const number = escapeHtml(String(verse.verse || ''))
+            const text = escapeHtml(String(verse.text || ''))
+            return `<p class="pm"><span class="verse-span" data-verse-id="${bookSlug}.${chapterNumber}.${number}"><span data-number="${number}" class="v">${number}</span></span><span class="verse-span" data-verse-id="${bookSlug}.${chapterNumber}.${number}">${text}</span></p>`
+          })
+          .join('')
+
+        return {
+          chapter: {
+            id: input.chapterId,
+            bibleId: input.bibleId,
+            number: chapterNumber,
+            bookId: input.bookName,
+            content: fallbackHtml,
+          },
+          source: 'fallback',
+        }
+      } catch (fallbackError) {
+        console.error('Fallback chapter fetch failed:', fallbackError)
+        throw primaryError
+      }
     }
   },
 
